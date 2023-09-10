@@ -23,6 +23,10 @@ const log = (message: string) => {
 };
 
 log(`Starting`);
+setInterval(() => {
+	log(`Parent is still alive at ${new Date().toISOString()}`);
+}, 1000 * 10);
+
 const child = execFile(pathToUse);
 
 child.stdout.on("data", (data) => log(`Child stdout: ${data.toString().trim()}`));
