@@ -5,7 +5,8 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "dotnet build ChildProcessTest && tsc",
-		"run": "node dist/index.js"
+		"run": "node dist/index.js",
+		"run-skip": "node dist/index.js skip"
 	},
 	"author": "",
 	"license": "ISC",

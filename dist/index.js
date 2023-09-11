@@ -26,4 +26,10 @@ child.stdout.on("data", (data) => log(`Child stdout: ${data.toString().trim()}`)
 child.stderr.on("data", (data) => log(`Child stderr: ${data.toString().trim()}`));
 child.on("error", (error) => log(`Child error: ${error}`));
 child.on("close", (code) => log(`Child process exited with code ${code}. Why did this happen?`));
-child.on("exit", (code) => log(`Child process exited with code ${code}.`));
+if (process.argv[2] != "skip") {
+    child.on("exit", (code) => log(`Child process exited with code ${code}.`));
+    log(`Added exit event`);
+}
+else {
+    log(`Skipping add exit event`);
+}
