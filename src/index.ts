@@ -27,15 +27,26 @@ setInterval(() => {
 	log(`Parent is still alive at ${new Date().toISOString()}`);
 }, 1000 * 10);
 
-const child = execFile(pathToUse);
+const child = execFile(pathToUse, { maxBuffer: Infinity });
 
-child.stdout.on("data", (data) => log(`Child stdout: ${data.toString().trim()}`));
+
+let c = 0;
+child.stdout.on("data", (data) => {
+	if (c++ % 100 != 0) return;
+
+	const lines: string[] = data.toString().split("\n").map(l => l.trim()).filter(l => l.length > 0);
+	lines.forEach(l => {
+		const t = parseInt(l.split(" ")[0]);
+		if (!isNaN(t)) {
+			const delta = Date.now() - t;
+			console.log(`Current delta is ${delta}ms. Chunk had ${data.length} bytes and ${data.split("\n").length} lines`);
+		}
+	});
+});
+
 child.stderr.on("data", (data) => log(`Child stderr: ${data.toString().trim()}`));
 child.on("error", (error) => log(`Child error: ${error}`));
-child.on("close", (code, sig) => log(`Child process exited with code ${code} (${sig}). Why did this happen?`));
-if (process.argv[2] != "skip") {
-	child.on("exit", (code, sig) => log(`Child process exited with code ${code} (${sig})`));
-	log(`Added exit event`);
-} else {
-	log(`Skipping add exit event`);
-}
+child.on("close", (code, sig) => {
+	log(`Child process closed with code ${code} (${sig})`);
+});
+child.on("exit", (code, sig) => log(`Child process exited with code ${code} (${sig})`));
